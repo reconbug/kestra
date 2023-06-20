@@ -29,7 +29,7 @@ public class StandAloneCommand extends AbstractServerCommand {
     @CommandLine.Option(names = {"-f", "--flow-path"}, description = "the flow path containing flow to inject at startup (when running with a memory flow repository)")
     private File flowPath;
 
-    @CommandLine.Option(names = {"--worker-thread"}, description = "the number of worker thread")
+    @CommandLine.Option(names = {"--worker-thread"}, description = "the number of threads used by the worker to process tasks, default to 2 times the available number of processors")
     private Integer workerThread;
 
     @SuppressWarnings("unused")

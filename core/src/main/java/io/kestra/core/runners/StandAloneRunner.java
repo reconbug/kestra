@@ -18,7 +18,7 @@ import jakarta.inject.Named;
 @Slf4j
 public class StandAloneRunner implements RunnerInterface, Closeable {
     @Setter private java.util.concurrent.ExecutorService poolExecutor;
-    @Setter protected int workerThread = Math.max(3, Runtime.getRuntime().availableProcessors());
+    @Setter protected int workerThread = Runtime.getRuntime().availableProcessors() * 2;
     @Setter protected boolean schedulerEnabled = true;
 
     @Inject

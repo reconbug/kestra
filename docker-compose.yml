@@ -26,7 +26,7 @@ services:
     user: "root"
     command:
       - -c
-      - /app/kestra server standalone --worker-thread=128
+      - /app/kestra server standalone
     volumes:
       - kestra-data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
