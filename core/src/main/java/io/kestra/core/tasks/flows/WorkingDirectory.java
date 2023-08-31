@@ -17,6 +17,7 @@ import io.kestra.core.validations.WorkingDirectoryTaskValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -199,6 +200,7 @@ public class WorkingDirectory extends Sequential {
     private Cache cache;
 
     @Getter(AccessLevel.PRIVATE)
+    @Builder.Default
     private transient long cacheDownloadedTime = 0L;
 
     @Override
