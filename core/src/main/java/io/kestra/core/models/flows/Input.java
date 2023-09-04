@@ -40,9 +40,7 @@ public abstract class Input<T> {
     @Pattern(regexp="[.a-zA-Z0-9_-]+")
     String name;
 
-    @NotBlank
     @NotNull
-    @Valid
     Type type;
 
     String description;

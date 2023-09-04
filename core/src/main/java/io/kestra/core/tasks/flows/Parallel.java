@@ -3,7 +3,6 @@ package io.kestra.core.tasks.flows;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -64,7 +63,6 @@ import java.util.stream.Stream;
 )
 public class Parallel extends Task implements FlowableTask<VoidOutput> {
     @NotNull
-    @NotBlank
     @Builder.Default
     @Schema(
         title = "Number of concurrent parallel tasks",

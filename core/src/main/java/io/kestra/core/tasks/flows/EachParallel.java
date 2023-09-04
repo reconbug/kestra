@@ -96,7 +96,6 @@ import java.util.Optional;
 )
 public class EachParallel extends Parallel implements FlowableTask<VoidOutput> {
     @NotNull
-    @NotBlank
     @Builder.Default
     @Schema(
         title = "Number of concurrent parallel tasks",
@@ -106,7 +105,6 @@ public class EachParallel extends Parallel implements FlowableTask<VoidOutput> {
     private final Integer concurrent = 0;
 
     @NotNull
-    @NotBlank
     @PluginProperty(dynamic = true)
     @Schema(
         title = "The list of values for this task",
