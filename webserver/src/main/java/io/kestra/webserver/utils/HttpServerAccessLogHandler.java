@@ -88,10 +88,9 @@ public class HttpServerAccessLogHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (accessLogger.isInfoEnabled() && msg instanceof HttpRequest) {
+        if (accessLogger.isInfoEnabled() && msg instanceof HttpRequest request) {
             final SocketChannel channel = (SocketChannel) ctx.channel();
             AccessLog accessLog = accessLog(channel);
-            final HttpRequest request = (HttpRequest) msg;
             accessLog.startTime = System.nanoTime();
             accessLog.inetAddress = inetAddress(channel, request);
             accessLog.port = channel.localAddress().getPort();
@@ -114,11 +113,15 @@ public class HttpServerAccessLogHandler extends ChannelDuplexHandler {
     }
 
     private void logAtLast(ChannelHandlerContext ctx, Object msg, ChannelPromise promise, AccessLog accessLog) {
-        ctx.write(msg, promise).addListener(future -> {
-            if (future.isSuccess()) {
-                accessLog.logAccess(accessLogger, filters);
-            }
-        });
+        //FIXME cannot attach a listener to a void future
+        ctx.write(msg, promise);
+
+//        ctx.write(msg, promise)
+//            .addListener(future -> {
+//            if (future.isSuccess()) {
+//                accessLog.logAccess(accessLogger, filters);
+//            }
+//        });
     }
 
     private void processWriteEvent(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {

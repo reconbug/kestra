@@ -147,6 +147,10 @@ class YamlFlowParserTest {
             () -> modelValidator.validate(this.parse("flows/invalids/listener.yaml"))
         );
 
+        // FIXME
+        //flow->Cannot coerce empty String ("") to `io.kestra.core.models.flows.State$Type` value (but could if coercion was enabled using `CoercionConfig`)
+        // at [Source: (StringReader); line: 8, column: 12] (through reference chain: io.kestra.core.models.flows.Flow["listeners"]->java.util.ArrayList[0]->io.kestra.core.models.listeners.Listener["conditions"]->java.util.ArrayList[0]->io.kestra.core.models.conditions.types.ExecutionStatusCondition["in"]->java.util.ArrayList[0])
+        exception.getConstraintViolations().forEach(c -> System.out.println(c.getPropertyPath().toString() + "->" + c.getMessage()));
         assertThat(exception.getConstraintViolations().size(), is(2));
         assertThat(new ArrayList<>(exception.getConstraintViolations()).get(0).getMessage(), containsString("must not be empty"));
         assertThat(new ArrayList<>(exception.getConstraintViolations()).get(1).getMessage(), is("must not be empty"));

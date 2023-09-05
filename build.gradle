@@ -109,6 +109,7 @@ allprojects {
         annotationProcessor platform("io.micronaut.platform:micronaut-platform:$micronautVersion")
         annotationProcessor "io.micronaut:micronaut-inject-java"
         annotationProcessor "io.micronaut.validation:micronaut-validation-processor:4.0.2"
+
         implementation platform("io.micronaut.platform:micronaut-platform:$micronautVersion")
         implementation "io.micronaut:micronaut-inject"
         implementation "io.micronaut.validation:micronaut-validation:4.0.2"
@@ -168,6 +169,7 @@ subprojects {
         testAnnotationProcessor platform("io.micronaut.platform:micronaut-platform:$micronautVersion")
         testAnnotationProcessor "io.micronaut:micronaut-inject-java"
         testAnnotationProcessor "io.micronaut.validation:micronaut-validation-processor:4.0.2"
+
         testImplementation platform("io.micronaut.platform:micronaut-platform:$micronautVersion")
 
         testImplementation "org.junit.jupiter:junit-jupiter-api"
