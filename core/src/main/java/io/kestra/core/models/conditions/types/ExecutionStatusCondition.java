@@ -4,6 +4,7 @@ import io.kestra.core.exceptions.IllegalConditionEvaluation;
 import io.kestra.core.exceptions.InternalException;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,6 @@ import io.kestra.core.models.conditions.ConditionContext;
 import io.kestra.core.models.flows.State;
 
 import java.util.List;
-import javax.validation.Valid;
 
 @SuperBuilder
 @ToString

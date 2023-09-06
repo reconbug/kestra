@@ -3,11 +3,11 @@ package io.kestra.core.models.validations;
 import io.micronaut.validation.validator.Validator;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import java.util.Optional;
 import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 @Singleton
 public class ModelValidator {

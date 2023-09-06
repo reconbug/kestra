@@ -3,13 +3,12 @@ package io.kestra.core.runners;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.kestra.core.models.executions.TaskRun;
 import io.kestra.core.models.tasks.Task;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.With;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder

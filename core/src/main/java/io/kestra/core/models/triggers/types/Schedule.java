@@ -21,8 +21,10 @@ import io.kestra.core.runners.RunContext;
 import io.kestra.core.runners.RunnerUtils;
 import io.kestra.core.services.ConditionService;
 import io.kestra.core.validations.CronExpression;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -34,9 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
 @SuperBuilder
 @ToString

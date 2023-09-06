@@ -1,9 +1,9 @@
 package io.kestra.core.models.executions.metrics;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 import java.time.Instant;
-import javax.validation.constraints.NotNull;
 
 @Builder
 public class MetricAggregation {

@@ -1,13 +1,13 @@
 package io.kestra.core.models.executions;
 
 import io.micronaut.core.annotation.Introspected;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 import io.kestra.core.models.tasks.Output;
 import io.kestra.core.models.triggers.AbstractTrigger;
 
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder

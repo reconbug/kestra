@@ -1,6 +1,7 @@
 package io.kestra.core.models.tasks.retrys;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 import net.jodah.failsafe.RetryPolicy;
 
 import java.time.Duration;
-import javax.validation.constraints.NotNull;
 
 @SuperBuilder
 @Getter

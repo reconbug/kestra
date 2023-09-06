@@ -6,10 +6,9 @@ import io.micronaut.context.annotation.Type;
 import io.micronaut.retry.annotation.DefaultRetryPredicate;
 import io.micronaut.retry.annotation.RetryPredicate;
 import io.micronaut.retry.intercept.OverrideRetryInterceptor;
+import jakarta.validation.constraints.Digits;
 
 import java.lang.annotation.*;
-
-import javax.validation.constraints.Digits;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

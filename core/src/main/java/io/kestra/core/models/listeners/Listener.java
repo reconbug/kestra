@@ -1,14 +1,14 @@
 package io.kestra.core.models.listeners;
 
 import io.micronaut.core.annotation.Introspected;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Value;
 import io.kestra.core.models.conditions.Condition;
 import io.kestra.core.models.tasks.Task;
 
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 
 @Value
 @Builder

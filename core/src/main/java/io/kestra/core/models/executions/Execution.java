@@ -12,6 +12,7 @@ import com.google.common.collect.Streams;
 import io.kestra.core.models.Label;
 import io.kestra.core.serializers.ListOrMapOfLabelDeserializer;
 import io.kestra.core.serializers.ListOrMapOfLabelSerializer;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 import lombok.With;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import io.micronaut.core.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder(toBuilder = true)

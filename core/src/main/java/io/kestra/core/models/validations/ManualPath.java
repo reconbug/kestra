@@ -1,10 +1,11 @@
 package io.kestra.core.models.validations;
 
+import jakarta.validation.ElementKind;
+import jakarta.validation.Path;
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import javax.validation.ElementKind;
-import javax.validation.Path;
 
 public class ManualPath implements Path {
     final Deque<Node> nodes;

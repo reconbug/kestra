@@ -2,6 +2,7 @@ package io.kestra.core.models.triggers.types;
 
 import io.kestra.core.models.annotations.PluginProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import io.kestra.core.models.annotations.Example;
@@ -19,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import io.micronaut.core.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 @SuperBuilder
 @ToString

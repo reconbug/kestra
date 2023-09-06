@@ -1,6 +1,7 @@
 package io.kestra.core.models.executions.metrics;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.ToString;
 import io.kestra.core.metrics.MetricRegistry;
 import io.kestra.core.models.executions.AbstractMetricEntry;
 
-import javax.validation.constraints.NotNull;
 import java.time.Duration;
 import java.util.Map;
 

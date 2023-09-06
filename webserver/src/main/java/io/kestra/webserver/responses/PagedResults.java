@@ -2,10 +2,10 @@ package io.kestra.webserver.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.kestra.core.repositories.ArrayListTotal;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor

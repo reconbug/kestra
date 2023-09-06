@@ -7,6 +7,7 @@ import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.executions.AbstractMetricEntry;
 import io.kestra.core.runners.RunContext;
 import io.kestra.core.serializers.JacksonMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -20,8 +21,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.validation.constraints.NotNull;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
 

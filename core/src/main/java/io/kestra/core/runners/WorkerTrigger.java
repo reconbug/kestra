@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.kestra.core.models.conditions.ConditionContext;
 import io.kestra.core.models.triggers.AbstractTrigger;
 import io.kestra.core.models.triggers.TriggerContext;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder

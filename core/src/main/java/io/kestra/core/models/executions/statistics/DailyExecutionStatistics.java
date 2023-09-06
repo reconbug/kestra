@@ -2,11 +2,11 @@ package io.kestra.core.models.executions.statistics;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.kestra.core.models.flows.State;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
 
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;

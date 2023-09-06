@@ -10,6 +10,7 @@ import io.kestra.core.runners.RunnerUtils;
 import io.kestra.runner.memory.MemoryRunner;
 import io.micronaut.context.ApplicationContext;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import javax.validation.ConstraintViolationException;
 
 @CommandLine.Command(
     name = "test",

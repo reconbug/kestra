@@ -2,11 +2,10 @@ package io.kestra.core.models.tasks;
 
 import io.kestra.core.validations.WorkerGroupValidation;
 import io.micronaut.core.annotation.Introspected;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.Pattern;
 
 @Getter
 @NoArgsConstructor

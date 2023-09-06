@@ -2,6 +2,7 @@ package io.kestra.core.models.validations;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.core.annotation.Introspected;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

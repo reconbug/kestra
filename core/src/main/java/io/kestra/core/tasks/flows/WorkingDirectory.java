@@ -15,6 +15,7 @@ import io.kestra.core.runners.WorkerTask;
 import io.kestra.core.utils.IdUtils;
 import io.kestra.core.validations.WorkingDirectoryTaskValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,7 +44,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import javax.validation.constraints.NotNull;
 
 @SuperBuilder(toBuilder = true)
 @ToString

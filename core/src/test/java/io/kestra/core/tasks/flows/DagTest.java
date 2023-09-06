@@ -8,9 +8,9 @@ import io.kestra.core.runners.AbstractMemoryRunnerTest;
 import io.kestra.core.serializers.YamlFlowParser;
 import io.kestra.core.utils.TestsUtils;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.net.URL;
 import java.util.Optional;

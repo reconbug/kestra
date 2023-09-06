@@ -5,12 +5,12 @@ import io.kestra.core.models.DeletedInterface;
 import io.kestra.core.models.executions.metrics.Counter;
 import io.kestra.core.models.executions.metrics.Timer;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 
 import java.time.Instant;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder(toBuilder = true)

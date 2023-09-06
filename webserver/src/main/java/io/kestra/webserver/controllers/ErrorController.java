@@ -15,6 +15,7 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.hateoas.JsonError;
 import io.micronaut.http.hateoas.Link;
 import io.micronaut.web.router.exceptions.UnsatisfiedQueryValueRouteException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
@@ -24,7 +25,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolationException;
 
 @Slf4j
 @Controller

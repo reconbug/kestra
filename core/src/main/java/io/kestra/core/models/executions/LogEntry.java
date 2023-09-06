@@ -6,11 +6,11 @@ import io.kestra.core.models.flows.Flow;
 import io.kestra.core.models.triggers.AbstractTrigger;
 import io.kestra.core.models.triggers.TriggerContext;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 import org.slf4j.event.Level;
 
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;

@@ -1,10 +1,10 @@
 package io.kestra.core.models.validations;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.metadata.ConstraintDescriptor;
 import lombok.Getter;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.metadata.ConstraintDescriptor;
 
 @Getter
 public class ManualConstraintViolation<T> implements ConstraintViolation<T> {

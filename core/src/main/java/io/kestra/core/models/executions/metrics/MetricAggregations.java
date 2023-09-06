@@ -1,10 +1,10 @@
 package io.kestra.core.models.executions.metrics;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
 
 @Builder
 @Getter

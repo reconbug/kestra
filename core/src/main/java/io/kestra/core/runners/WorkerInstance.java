@@ -1,5 +1,6 @@
 package io.kestra.core.runners;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -7,7 +8,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder

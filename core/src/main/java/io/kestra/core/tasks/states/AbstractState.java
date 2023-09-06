@@ -8,6 +8,7 @@ import io.kestra.core.runners.RunContext;
 import io.kestra.core.serializers.JacksonMapper;
 import io.kestra.core.utils.MapUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @SuperBuilder
 @ToString

@@ -1,11 +1,10 @@
 package io.kestra.core.models.executions;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
-
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder

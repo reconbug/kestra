@@ -1,11 +1,11 @@
 package io.kestra.core.models.validations;
 
 import io.micronaut.core.annotation.NonNull;
+import jakarta.validation.ElementKind;
+import jakarta.validation.Path;
 import lombok.Getter;
 
 import io.micronaut.core.annotation.Nullable;
-import javax.validation.ElementKind;
-import javax.validation.Path;
 
 @Getter
 public class ManualPropertyNode implements Path.PropertyNode {

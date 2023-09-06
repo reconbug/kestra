@@ -12,10 +12,10 @@ import com.github.jknack.handlebars.io.TemplateLoader;
 import com.google.common.collect.ImmutableMap;
 import io.kestra.core.models.validations.ManualConstraintViolation;
 import io.kestra.core.serializers.YamlFlowParser;
+import jakarta.validation.ConstraintViolationException;
 
 import java.io.IOException;
 import java.util.Collections;
-import javax.validation.ConstraintViolationException;
 
 public class HandleBarDeserializer extends StringDeserializer {
     private static final long serialVersionUID = 1L;

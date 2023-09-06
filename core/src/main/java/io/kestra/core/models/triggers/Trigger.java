@@ -1,6 +1,7 @@
 package io.kestra.core.models.triggers;
 
 import io.kestra.core.models.flows.State;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import io.kestra.core.models.executions.Execution;
@@ -10,7 +11,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import io.micronaut.core.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 @SuperBuilder(toBuilder = true)
 @ToString

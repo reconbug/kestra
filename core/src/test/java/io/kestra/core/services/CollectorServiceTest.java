@@ -13,14 +13,13 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.validation.ConstraintViolationException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

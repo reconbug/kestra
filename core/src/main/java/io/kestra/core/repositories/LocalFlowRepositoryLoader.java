@@ -6,6 +6,7 @@ import io.kestra.core.serializers.YamlFlowParser;
 import io.kestra.core.services.TaskDefaultService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -20,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolationException;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
 

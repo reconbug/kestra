@@ -1,12 +1,12 @@
 package io.kestra.core.models.executions;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
 import io.kestra.core.models.flows.State;
 
 import java.util.List;
 import java.util.Optional;
-import javax.validation.constraints.NotNull;
 
 @Value
 @Builder

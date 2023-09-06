@@ -13,6 +13,7 @@ import io.kestra.core.serializers.JacksonMapper;
 import io.kestra.core.serializers.YamlFlowParser;
 import io.kestra.core.utils.MapUtils;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -21,7 +22,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
-import javax.validation.ConstraintViolationException;
 
 @Singleton
 public class TaskDefaultService {

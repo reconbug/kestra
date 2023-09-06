@@ -1,11 +1,10 @@
 package io.kestra.core.models.topologies;
 
 import io.kestra.core.models.flows.Flow;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor

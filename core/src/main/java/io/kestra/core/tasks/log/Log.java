@@ -7,14 +7,14 @@ import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
 import io.kestra.core.models.tasks.VoidOutput;
 import io.kestra.core.runners.RunContext;
-import io.micronaut.core.annotation.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
@@ -54,7 +54,7 @@ public class Log extends Task implements RunnableTask<VoidOutput> {
             String[].class
         }
     )
-    @NonNull
+    @NotNull
     @NotBlank
     @PluginProperty(dynamic = true)
     private Object message;

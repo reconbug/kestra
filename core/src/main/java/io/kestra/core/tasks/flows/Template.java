@@ -26,6 +26,8 @@ import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +39,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
 import static io.kestra.core.utils.Rethrow.throwFunction;

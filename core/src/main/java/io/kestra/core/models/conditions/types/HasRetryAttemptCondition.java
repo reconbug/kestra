@@ -9,6 +9,7 @@ import io.kestra.core.models.conditions.Condition;
 import io.kestra.core.models.conditions.ConditionContext;
 import io.kestra.core.models.flows.State;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-import javax.validation.Valid;
 
 @SuperBuilder
 @ToString

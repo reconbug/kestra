@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;

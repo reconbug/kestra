@@ -1,5 +1,6 @@
 package io.kestra.core.models.executions;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @ToString
 @EqualsAndHashCode

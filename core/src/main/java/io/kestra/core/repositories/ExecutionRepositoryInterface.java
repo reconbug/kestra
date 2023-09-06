@@ -9,6 +9,7 @@ import io.kestra.core.models.flows.State;
 import io.kestra.core.utils.DateUtils;
 import io.micronaut.data.model.Pageable;
 import io.reactivex.Flowable;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 public interface ExecutionRepositoryInterface extends SaveRepositoryInterface<Execution> {
     Boolean isTaskRunEnabled();

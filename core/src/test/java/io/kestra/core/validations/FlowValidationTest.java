@@ -6,9 +6,9 @@ import io.kestra.core.serializers.YamlFlowParser;
 import io.kestra.core.utils.TestsUtils;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.net.URL;
 import java.util.Optional;

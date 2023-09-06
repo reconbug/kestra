@@ -11,13 +11,13 @@ import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.client.netty.DefaultHttpClient;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolationException;
 
 @CommandLine.Command(
     name = "update",

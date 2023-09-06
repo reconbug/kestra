@@ -10,6 +10,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.client.netty.DefaultHttpClient;
+import jakarta.validation.ConstraintViolationException;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolationException;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
 import static io.kestra.core.utils.Rethrow.throwFunction;

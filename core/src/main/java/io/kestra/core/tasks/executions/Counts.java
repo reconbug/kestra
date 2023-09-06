@@ -12,6 +12,8 @@ import io.kestra.core.models.tasks.Task;
 import io.kestra.core.repositories.ExecutionRepositoryInterface;
 import io.kestra.core.runners.RunContext;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
@@ -19,8 +21,6 @@ import org.slf4j.Logger;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import static io.kestra.core.utils.Rethrow.throwPredicate;
 

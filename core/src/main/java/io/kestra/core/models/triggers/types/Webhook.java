@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.micronaut.http.HttpRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import io.kestra.core.models.annotations.Example;
@@ -21,8 +23,6 @@ import io.kestra.core.utils.IdUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @SuperBuilder
 @ToString
