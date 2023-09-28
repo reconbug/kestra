@@ -3,6 +3,7 @@ package io.kestra.core.tasks.storages;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.io.IOUtils;
@@ -18,8 +19,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.List;
-
-import javax.validation.constraints.NotNull;
 
 import static io.kestra.core.utils.Rethrow.throwConsumer;
 
