@@ -120,7 +120,7 @@ public class ExecutionController {
     private RunContextFactory runContextFactory;
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/search", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/search", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Search for executions")
     public PagedResults<Execution> find(
         @Parameter(description = "The current page") @QueryValue(defaultValue = "1") int page,
@@ -147,7 +147,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/{executionId}/graph", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/{executionId}/graph", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Generate a graph for an execution")
     public FlowGraph flowGraph(
         @Parameter(description = "The execution id") @PathVariable String executionId
@@ -169,7 +169,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/{executionId}/eval/{taskRunId}", produces = MediaType.TEXT_JSON, consumes = MediaType.TEXT_PLAIN)
+    @Post(uri = "/{executionId}/eval/{taskRunId}", produces = MediaType.APPLICATION_JSON, consumes = MediaType.TEXT_PLAIN)
     @Operation(tags = {"Executions"}, summary = "Evaluate a variable expression for this taskrun")
     public EvalResult eval(
         @Parameter(description = "The execution id") @PathVariable String executionId,
@@ -212,7 +212,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/{executionId}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/{executionId}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Get an execution")
     public Execution get(
         @Parameter(description = "The execution id") @PathVariable String executionId
@@ -222,7 +222,7 @@ public class ExecutionController {
             .orElse(null);
     }
 
-    @Delete(uri = "/{executionId}", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/{executionId}", produces = MediaType.APPLICATION_JSON)
     @ExecuteOn(TaskExecutors.IO)
     @Operation(tags = {"Executions"}, summary = "Delete an execution")
     @ApiResponse(responseCode = "204", description = "On success")
@@ -238,7 +238,7 @@ public class ExecutionController {
         }
     }
 
-    @Delete(uri = "/by-ids", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/by-ids", produces = MediaType.APPLICATION_JSON)
     @ExecuteOn(TaskExecutors.IO)
     @Operation(tags = {"Executions"}, summary = "Delete a list of executions")
     @ApiResponse(responseCode = "200", description = "On success", content = {@Content(schema = @Schema(implementation = BulkResponse.class))})
@@ -279,7 +279,7 @@ public class ExecutionController {
         return HttpResponse.ok(BulkResponse.builder().count(executions.size()).build());
     }
 
-    @Delete(uri = "/by-query", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/by-query", produces = MediaType.APPLICATION_JSON)
     @ExecuteOn(TaskExecutors.IO)
     @Operation(tags = {"Executions"}, summary = "Delete executions filter by query parameters")
     public HttpResponse<BulkResponse> deleteByQuery(
@@ -313,7 +313,7 @@ public class ExecutionController {
 
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(produces = MediaType.TEXT_JSON)
+    @Get(produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Search for executions for a flow")
     public PagedResults<Execution> findByFlowId(
         @Parameter(description = "The flow namespace") @QueryValue String namespace,
@@ -328,7 +328,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Trigger a new execution by POST webhook trigger")
     public Execution webhookTriggerPost(
         @Parameter(description = "The flow namespace") @PathVariable String namespace,
@@ -340,7 +340,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Trigger a new execution by GET webhook trigger")
     public Execution webhookTriggerGet(
         @Parameter(description = "The flow namespace") @PathVariable String namespace,
@@ -352,7 +352,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Put(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.TEXT_JSON)
+    @Put(uri = "/webhook/{namespace}/{id}/{key}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Trigger a new execution by PUT webhook trigger")
     public Execution webhookTriggerPut(
         @Parameter(description = "The flow namespace") @PathVariable String namespace,
@@ -421,7 +421,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/trigger/{namespace}/{id}", produces = MediaType.TEXT_JSON, consumes = MediaType.MULTIPART_FORM_DATA)
+    @Post(uri = "/trigger/{namespace}/{id}", produces = MediaType.APPLICATION_JSON, consumes = MediaType.MULTIPART_FORM_DATA)
     @Operation(tags = {"Executions"}, summary = "Trigger a new execution for a flow")
     @ApiResponse(responseCode = "409", description = "if the flow is disabled")
     public Execution trigger(
@@ -560,7 +560,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/{executionId}/file/metas", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/{executionId}/file/metas", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Get file meta information for an execution")
     public HttpResponse<FileMetas> filesize(
         @Parameter(description = "The execution id") @PathVariable String executionId,
@@ -578,7 +578,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/{executionId}/restart", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/{executionId}/restart", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Restart a new execution from an old one")
     public Execution restart(
         @Parameter(description = "The execution id") @PathVariable String executionId,
@@ -598,7 +598,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/restart/by-ids", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/restart/by-ids", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Restart a list of executions")
     @ApiResponse(responseCode = "200", description = "On success", content = {@Content(schema = @Schema(implementation = BulkResponse.class))})
     @ApiResponse(responseCode = "422", description = "Restarted with errors", content = {@Content(schema = @Schema(implementation = BulkErrorResponse.class))})
@@ -649,7 +649,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/restart/by-query", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/restart/by-query", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Restart executions filter by query parameters")
     public HttpResponse<BulkResponse> restartByQuery(
         @Parameter(description = "A string filter") @Nullable @QueryValue(value = "q") String query,
@@ -683,7 +683,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/{executionId}/replay", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/{executionId}/replay", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Create a new execution from an old one and start it from a specified task run id")
     public Execution replay(
         @Parameter(description = "the original execution id to clone") @PathVariable String executionId,
@@ -721,7 +721,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/{executionId}/state", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/{executionId}/state", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Change state for a taskrun in an execution")
     public Execution changeState(
         @Parameter(description = "The execution id") @PathVariable String executionId,
@@ -746,7 +746,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Delete(uri = "/{executionId}/kill", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/{executionId}/kill", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Kill an execution")
     @ApiResponse(responseCode = "204", description = "On success")
     @ApiResponse(responseCode = "409", description = "if the executions is already finished")
@@ -781,7 +781,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "/{executionId}/resume", produces = MediaType.TEXT_JSON)
+    @Post(uri = "/{executionId}/resume", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Resume a paused execution.")
     @ApiResponse(responseCode = "204", description = "On success")
     @ApiResponse(responseCode = "409", description = "if the executions is not paused")
@@ -804,7 +804,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Delete(uri = "/kill/by-ids", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/kill/by-ids", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Kill a list of executions")
     @ApiResponse(responseCode = "200", description = "On success", content = {@Content(schema = @Schema(implementation = BulkResponse.class))})
     @ApiResponse(responseCode = "422", description = "Killed with errors", content = {@Content(schema = @Schema(implementation = BulkErrorResponse.class))})
@@ -868,7 +868,7 @@ public class ExecutionController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Delete(uri = "/kill/by-query", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "/kill/by-query", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Kill executions filter by query parameters")
     public HttpResponse<?> killByQuery(
         @Parameter(description = "A string filter") @Nullable @QueryValue(value = "q") String query,

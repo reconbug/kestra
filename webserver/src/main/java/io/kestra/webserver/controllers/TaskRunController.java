@@ -30,7 +30,7 @@ public class TaskRunController {
     protected ExecutionRepositoryInterface executionRepository;
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/search", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/search", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Executions"}, summary = "Search for taskruns")
     public PagedResults<TaskRun> findTaskRun(
         @Parameter(description = "The current page") @QueryValue(defaultValue = "1") int page,

@@ -49,7 +49,7 @@ public class TemplateController {
     private ModelValidator modelValidator;
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "{namespace}/{id}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "{namespace}/{id}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "Get a template")
     public Template index(
         @Parameter(description = "The template namespace") @PathVariable String namespace,
@@ -61,7 +61,7 @@ public class TemplateController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/search", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/search", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "Search for templates")
     public PagedResults<Template> find(
         @Parameter(description = "The current page") @QueryValue(defaultValue = "1") int page,
@@ -74,7 +74,7 @@ public class TemplateController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(produces = MediaType.TEXT_JSON)
+    @Post(produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "Create a template")
     public HttpResponse<Template> create(
         @Parameter(description = "The template") @Valid @Body Template template
@@ -93,7 +93,7 @@ public class TemplateController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Put(uri = "{namespace}/{id}", produces = MediaType.TEXT_JSON)
+    @Put(uri = "{namespace}/{id}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "Update a template")
     public HttpResponse<Template> update(
         @Parameter(description = "The template namespace") @PathVariable String namespace,
@@ -110,7 +110,7 @@ public class TemplateController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Delete(uri = "{namespace}/{id}", produces = MediaType.TEXT_JSON)
+    @Delete(uri = "{namespace}/{id}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "Delete a template")
     @ApiResponse(responseCode = "204", description = "On success")
     public HttpResponse<Void> delete(
@@ -127,7 +127,7 @@ public class TemplateController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "distinct-namespaces", produces = MediaType.TEXT_JSON)
+    @Get(uri = "distinct-namespaces", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Templates"}, summary = "List all distinct namespaces")
     public List<String> listDistinctNamespace() {
         return templateRepository.findDistinctNamespace();
@@ -135,7 +135,7 @@ public class TemplateController {
 
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "{namespace}", produces = MediaType.TEXT_JSON)
+    @Post(uri = "{namespace}", produces = MediaType.APPLICATION_JSON)
     @Operation(
         tags = {"Templates"},
         summary = "Update a complete namespace from json object",
@@ -226,7 +226,7 @@ public class TemplateController {
 
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "validate", produces = MediaType.TEXT_JSON, consumes = MediaType.APPLICATION_YAML)
+    @Post(uri = "validate", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_YAML)
     @Operation(tags = {"Templates"}, summary = "Validate a list of templates")
     public List<ValidateConstraintViolation> validateTemplates(
         @Parameter(description= "A list of templates") @Body String templates

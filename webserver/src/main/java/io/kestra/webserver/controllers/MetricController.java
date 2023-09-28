@@ -38,7 +38,7 @@ public class MetricController {
     protected QueueInterface<MetricEntry> metricQueue;
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/{executionId}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/{executionId}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get metrics for a specific execution")
     public PagedResults<MetricEntry> findByExecution(
         @Parameter(description = "The current page") @QueryValue(defaultValue = "1") int page,
@@ -59,7 +59,7 @@ public class MetricController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/names/{namespace}/{flowId}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/names/{namespace}/{flowId}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get metrics names for a specific flow")
     public List<String> flowMetrics(
         @Parameter(description = "The namespace") @PathVariable String namespace,
@@ -69,7 +69,7 @@ public class MetricController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/names/{namespace}/{flowId}/{taskId}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/names/{namespace}/{flowId}/{taskId}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get metrics names for a specific task in a flow")
     public List<String> taskMetrics(
         @Parameter(description = "The namespace") @PathVariable String namespace,
@@ -80,7 +80,7 @@ public class MetricController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/tasks/{namespace}/{flowId}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/tasks/{namespace}/{flowId}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get tasks id that have metrics for a specific flow, include deleted or renamed tasks")
     public List<String> tasks(
         @Parameter(description = "The namespace") @PathVariable String namespace,
@@ -90,7 +90,7 @@ public class MetricController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/aggregates/{namespace}/{flowId}/{metric}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/aggregates/{namespace}/{flowId}/{metric}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get metrics aggregations for a specific flow")
     public MetricAggregations aggregateByFlowId(
         @Parameter(description = "The namespace") @PathVariable String namespace,
@@ -112,7 +112,7 @@ public class MetricController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Get(uri = "/aggregates/{namespace}/{flowId}/{taskId}/{metric}", produces = MediaType.TEXT_JSON)
+    @Get(uri = "/aggregates/{namespace}/{flowId}/{taskId}/{metric}", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Metrics"}, summary = "Get metrics aggregations for a specific flow")
     public MetricAggregations aggregateByFlowIdAndTaskId(
         @Parameter(description = "The namespace") @PathVariable String namespace,

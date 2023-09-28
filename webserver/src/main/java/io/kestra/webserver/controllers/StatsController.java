@@ -26,7 +26,7 @@ public class StatsController {
     protected ExecutionRepositoryInterface executionRepository;
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "executions/daily", produces = MediaType.TEXT_JSON)
+    @Post(uri = "executions/daily", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Stats"}, summary = "Get daily statistics for executions")
     public List<DailyExecutionStatistics> dailyStatistics(
         @Parameter(description = "A string filter") @Nullable String q,
@@ -48,7 +48,7 @@ public class StatsController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "taskruns/daily", produces = MediaType.TEXT_JSON)
+    @Post(uri = "taskruns/daily", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Stats"}, summary = "Get daily statistics for taskRuns")
     public List<DailyExecutionStatistics> taskRunsDailyStatistics(
         @Parameter(description = "A string filter") @Nullable String q,
@@ -69,7 +69,7 @@ public class StatsController {
     }
 
     @ExecuteOn(TaskExecutors.IO)
-    @Post(uri = "executions/daily/group-by-flow", produces = MediaType.TEXT_JSON)
+    @Post(uri = "executions/daily/group-by-flow", produces = MediaType.APPLICATION_JSON)
     @Operation(tags = {"Stats"}, summary = "Get daily statistics for executions group by namespaces and flows")
     public Map<String, Map<String, List<DailyExecutionStatistics>>> dailyGroupByFlowStatistics(
         @Parameter(description = "A string filter") @Nullable String q,
