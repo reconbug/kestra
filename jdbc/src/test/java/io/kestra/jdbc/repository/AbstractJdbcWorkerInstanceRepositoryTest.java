@@ -1,6 +1,7 @@
 package io.kestra.jdbc.repository;
 
 import io.kestra.core.runners.WorkerInstance;
+import io.kestra.core.utils.Await;
 import io.kestra.jdbc.JdbcTestUtils;
 import io.kestra.jdbc.JooqDSLContextWrapper;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -10,16 +11,17 @@ import org.jooq.impl.DSL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @MicronautTest(transactional = false)
 public abstract class AbstractJdbcWorkerInstanceRepositoryTest {
@@ -101,15 +103,17 @@ public abstract class AbstractJdbcWorkerInstanceRepositoryTest {
     }
 
     @Test
-    protected void heartbeatCheckup() throws InterruptedException {
+    protected void heartbeatCheckup() throws TimeoutException {
         WorkerInstance workerInstance = createWorkerInstance(UUID.randomUUID().toString());
         workerInstanceRepository.save(workerInstance);
-        CountDownLatch queueCount = new CountDownLatch(1);
 
-        queueCount.await(15, TimeUnit.SECONDS);
-        Optional<WorkerInstance> updatedWorkerInstance = workerInstanceRepository.heartbeatCheckUp(workerInstance.getWorkerUuid().toString());
-        assertThat(updatedWorkerInstance.isPresent(), is(true));
-        assertThat(updatedWorkerInstance.get().getHeartbeatDate(), greaterThan(workerInstance.getHeartbeatDate()));
+        WorkerInstance updatedWorkerInstance = Await.until(
+            () -> workerInstanceRepository.heartbeatCheckUp(workerInstance.getWorkerUuid().toString()).orElse(null),
+            Duration.ofMillis(500),
+            Duration.ofSeconds(15)
+        );
+        assertThat(updatedWorkerInstance, notNullValue());
+        assertThat(updatedWorkerInstance.getHeartbeatDate(), greaterThan(workerInstance.getHeartbeatDate()));
     }
 
     @Test

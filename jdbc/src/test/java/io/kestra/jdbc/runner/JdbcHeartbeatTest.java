@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MicronautTest(transactional = false, environments = "heartbeat")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // must be per-class to allow calling once init() which took a lot of time
@@ -104,14 +105,14 @@ public abstract class JdbcHeartbeatTest {
             }
         });
 
-        workerJobQueue.emit(workerTask(1500));
-        runningLatch.await(2, TimeUnit.SECONDS);
+        workerJobQueue.emit(workerTask(1000));
+        assertTrue(runningLatch.await(2, TimeUnit.SECONDS));
         worker.shutdown();
 
         Worker newWorker = new Worker(applicationContext, 8, null);
         applicationContext.registerSingleton(newWorker);
         newWorker.run();
-        resubmitLatch.await(15, TimeUnit.SECONDS);
+        assertTrue(resubmitLatch.await(5, TimeUnit.SECONDS));
 
         assertThat(workerTaskResult.get().getTaskRun().getState().getCurrent(), is(Type.SUCCESS));
     }
@@ -130,16 +131,18 @@ public abstract class JdbcHeartbeatTest {
         AtomicReference<WorkerTriggerResult> workerTriggerResult = new AtomicReference<>(null);
         workerTriggerResultQueue.receive(either -> {
             workerTriggerResult.set(either.getLeft());
+
+            countDownLatch.countDown();
         });
 
-        workerJobQueue.emit(workerTrigger(7000));
-        countDownLatch.await(2, TimeUnit.SECONDS);
+        workerJobQueue.emit(workerTrigger(1000));
+        Thread.sleep(500); // wait a little to be sure the worker job has been handled
         worker.shutdown();
 
         Worker newWorker = new Worker(applicationContext, 8, null);
         applicationContext.registerSingleton(newWorker);
         newWorker.run();
-        countDownLatch.await(12, TimeUnit.SECONDS);
+        assertTrue(countDownLatch.await(5, TimeUnit.SECONDS));
 
         assertThat(workerTriggerResult.get().getSuccess(), is(true));
     }
