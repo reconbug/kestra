@@ -34,7 +34,6 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.server.exceptions.InternalServerException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.validation.Validated;
@@ -710,10 +709,11 @@ public class FlowController {
         @Part CompletedFileUpload fileUpload
     ) throws IOException {
         String fileName = fileUpload.getFilename().toLowerCase();
+        String tenant = tenantService.resolveTenant();
         if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
             List<String> sources = List.of(new String(fileUpload.getBytes()).split("---"));
             for (String source : sources) {
-                flowService.importFlow(source);
+                importFlow(tenant, source);
             }
         } else if (fileName.endsWith(".zip")) {
             try (ZipInputStream archive = new ZipInputStream(fileUpload.getInputStream())) {
@@ -724,7 +724,7 @@ public class FlowController {
                     }
 
                     String source = new String(archive.readAllBytes());
-                    flowService.importFlow(source);
+                    importFlow(tenant, source);
                 }
             }
         } else {
@@ -732,6 +732,10 @@ public class FlowController {
         }
 
         return HttpResponse.status(HttpStatus.NO_CONTENT);
+    }
+
+    protected FlowWithSource importFlow(String tenant, String source) {
+        return flowService.importFlow(tenant, source);
     }
 
     protected List<FlowWithSource> setFlowsDisableByIds(List<IdWithNamespace> ids, boolean disable) {

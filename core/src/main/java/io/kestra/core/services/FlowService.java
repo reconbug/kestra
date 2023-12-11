@@ -57,15 +57,16 @@ public class FlowService {
     @Inject
     ApplicationContext applicationContext;
 
+    public FlowWithSource importFlow(String tenant, String source) {
+        Flow parsed = flowWithTenant(tenant, source);
+        return flowRepository
+            .findById(tenant, parsed.getNamespace(), parsed.getId())
+            .map(previous -> flowRepository.update(parsed, previous, source, taskDefaultService.injectDefaults(parsed)))
+            .orElse(flowRepository.create(parsed, source, taskDefaultService.injectDefaults(parsed)));
+    }
 
-    public void importFlow(String source) {
-        Flow parsed = yamlFlowParser.parse(source, Flow.class);
-        flowRepository
-            .findById(tenantService.resolveTenant(), parsed.getNamespace(), parsed.getId())
-            .ifPresentOrElse(
-                previous -> flowRepository.update(parsed, previous, source, taskDefaultService.injectDefaults(parsed)),
-                () -> flowRepository.create(parsed, source, taskDefaultService.injectDefaults(parsed))
-            );
+    private Flow flowWithTenant(String tenant, String source) {
+        return yamlFlowParser.parse(source, Flow.class).toBuilder().tenantId(tenant).build();
     }
 
     public List<FlowWithSource> findByNamespaceWithSource(String namespace) {

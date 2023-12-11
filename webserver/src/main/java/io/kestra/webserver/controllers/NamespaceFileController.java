@@ -181,6 +181,7 @@ public class NamespaceFileController {
 
     private void putNamespaceFile(String namespace, URI path, BufferedInputStream inputStream) throws IOException {
         String filePath = path.getPath();
+        String tenant = tenantService.resolveTenant();
         if(filePath.matches("/" + FLOWS_FOLDER + "/.*")) {
             if(filePath.split("/").length != 3) {
                 throw new IllegalArgumentException("Invalid flow file path: " + filePath);
@@ -188,11 +189,11 @@ public class NamespaceFileController {
 
             String flowSource = new String(inputStream.readAllBytes());
             flowSource = flowSource.replaceFirst("(?m)^namespace: .*$", "namespace: " + namespace);
-            flowService.importFlow(flowSource);
+            flowService.importFlow(tenant, flowSource);
             return;
         }
 
-        storageInterface.put(tenantService.resolveTenant(), toNamespacedStorageUri(namespace, path), inputStream);
+        storageInterface.put(tenant, toNamespacedStorageUri(namespace, path), inputStream);
     }
 
     @ExecuteOn(TaskExecutors.IO)
