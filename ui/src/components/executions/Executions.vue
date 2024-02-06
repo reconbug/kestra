@@ -82,6 +82,18 @@
                 <el-form-item>
                     <refresh-button class="float-right" @refresh="refresh" />
                 </el-form-item>
+                <el-form-item>
+                    <el-button @click="toggleSubflows" :icon="ToggleSwitchOutline" v-if="isSubflowsEnabled">
+                        <kicon :tooltip="$t('toggle execution subflows')" placement="bottom">
+                            {{ $t('subflows') }}
+                        </kicon>
+                    </el-button>
+                    <el-button @click="toggleSubflows" :icon="ToggleSwitchOffOutline" v-else>
+                        <kicon :tooltip="$t('toggle execution subflows')" placement="bottom">
+                            {{ $t('subflows') }}
+                        </kicon>
+                    </el-button>
+                </el-form-item>
             </template>
 
             <template #top v-if="isDisplayedTop">
@@ -295,6 +307,8 @@
     import BulkSelect from "../layout/BulkSelect.vue";
     import SelectTable from "../layout/SelectTable.vue";
     import Restart from "vue-material-design-icons/Restart.vue";
+    import ToggleSwitchOutline from "vue-material-design-icons/ToggleSwitchOutline.vue";
+    import ToggleSwitchOffOutline from "vue-material-design-icons/ToggleSwitchOffOutline.vue";
     import Delete from "vue-material-design-icons/Delete.vue";
     import StopCircleOutline from "vue-material-design-icons/StopCircleOutline.vue";
     import Pencil from "vue-material-design-icons/Pencil.vue";
@@ -390,6 +404,7 @@
         },
         data() {
             return {
+                isSubflowsEnabled: true,
                 isDefaultNamespaceAllow: true,
                 dailyReady: false,
                 dblClickRouteName: "executions/update",
@@ -506,6 +521,10 @@
             }
         },
         methods: {
+            toggleSubflows() {
+                this.isSubflowsEnabled = !this.isSubflowsEnabled;
+                localStorage.setItem("isSubflowsEnabled", this.isSubflowsEnabled ? "1" : "0");
+            },
             onDisplayColumnsChange(event) {
                 localStorage.setItem(this.storageKey, event);
                 this.displayColumns = event;
@@ -546,6 +565,8 @@
                 if (this.flowId) {
                     queryFilter["flowId"] = this.flowId;
                 }
+
+                queryFilter["excludeSubflows"] =! this.isSubflowsEnabled;
 
                 return _merge(base, queryFilter)
             },
