@@ -132,10 +132,10 @@ public class Subflow extends Task implements ExecutableTask<Subflow.Output> {
     private Map<String, Object> outputs;
 
     @Override
-    public List<SubflowExecution<?>> createSubflowExecutions(RunContext runContext,
-                                                             FlowExecutorInterface flowExecutorInterface,
+    public List<SubflowExecution> createSubflowExecutions(RunContext runContext,
+                                                             io.kestra.core.models.flows.Flow subFlow,
                                                              io.kestra.core.models.flows.Flow currentFlow,
-                                                             Execution currentExecution,
+                                                             List<Label> currentExecutionLabels,
                                                              TaskRun currentTaskRun) throws InternalException {
         Map<String, Object> inputs = new HashMap<>();
         if (this.inputs != null) {
@@ -143,8 +143,8 @@ public class Subflow extends Task implements ExecutableTask<Subflow.Output> {
         }
 
         List<Label> labels = new ArrayList<>();
-        if (this.inheritLabels && currentExecution.getLabels() != null && !currentExecution.getLabels().isEmpty()) {
-            labels.addAll(currentExecution.getLabels());
+        if (this.inheritLabels && currentExecutionLabels != null && !currentExecutionLabels.isEmpty()) {
+            labels.addAll(currentExecutionLabels);
         }
 
         if (this.labels != null) {
@@ -155,8 +155,7 @@ public class Subflow extends Task implements ExecutableTask<Subflow.Output> {
 
         return List.of(ExecutableUtils.subflowExecution(
             runContext,
-            flowExecutorInterface,
-            currentExecution,
+            subFlow,
             currentFlow,
             this,
             currentTaskRun,

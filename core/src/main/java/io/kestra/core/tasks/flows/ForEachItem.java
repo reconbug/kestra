@@ -182,11 +182,11 @@ public class ForEachItem extends Task implements ExecutableTask<ForEachItem.Outp
     private final Boolean inheritLabels = false;
 
     @Override
-    public List<SubflowExecution<?>> createSubflowExecutions(
+    public List<SubflowExecution> createSubflowExecutions(
         RunContext runContext,
-        FlowExecutorInterface flowExecutorInterface,
+        Flow subFlow,
         Flow currentFlow,
-        Execution currentExecution,
+        List<Label> currentExecutionLabels,
         TaskRun currentTaskRun
     ) throws InternalException {
         var renderedUri = runContext.render(this.items);
@@ -202,7 +202,7 @@ public class ForEachItem extends Task implements ExecutableTask<ForEachItem.Outp
             AtomicInteger currentIteration = new AtomicInteger(1);
 
             return splits.stream()
-                .<SubflowExecution<?>>map(throwFunction(
+                .map(throwFunction(
                     split -> {
                         int iteration = currentIteration.getAndIncrement();
                         // these are special variable that can be passed to the subflow
@@ -214,8 +214,8 @@ public class ForEachItem extends Task implements ExecutableTask<ForEachItem.Outp
                         }
 
                         List<Label> labels = new ArrayList<>();
-                        if (this.inheritLabels && currentExecution.getLabels() != null && !currentExecution.getLabels().isEmpty()) {
-                            labels.addAll(currentExecution.getLabels());
+                        if (this.inheritLabels && currentExecutionLabels != null && !currentExecutionLabels.isEmpty()) {
+                            labels.addAll(currentExecutionLabels);
                         }
 
                         if (this.labels != null) {
@@ -232,8 +232,7 @@ public class ForEachItem extends Task implements ExecutableTask<ForEachItem.Outp
                             .build();
                         return ExecutableUtils.subflowExecution(
                             runContext,
-                            flowExecutorInterface,
-                            currentExecution,
+                            subFlow,
                             currentFlow,
                             this,
                             currentTaskRun

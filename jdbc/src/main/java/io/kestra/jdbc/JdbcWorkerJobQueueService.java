@@ -62,6 +62,12 @@ public class JdbcWorkerJobQueueService {
                         workerInstance,
                         0
                     );
+                } else if (workerJob instanceof WorkerExecutable workerExecutable) {
+                    workerJobRunning = WorkerExecutableRunning.of(
+                        workerExecutable,
+                        workerInstance,
+                        0
+                    );
                 } else {
                     throw new IllegalArgumentException("Message is of type " + workerJob.getClass() + " which should never occurs");
                 }

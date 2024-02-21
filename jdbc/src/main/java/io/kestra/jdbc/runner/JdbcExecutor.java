@@ -166,6 +166,10 @@ public class JdbcExecutor implements ExecutorInterface {
     private QueueInterface<SubflowExecutionResult> subflowExecutionResultQueue;
 
     @Inject
+    @Named(QueueFactoryInterface.WORKEREXECUTABLERESULT_NAMED)
+    private QueueInterface<WorkerExecutableResult> workerExecutableResultQueue;
+
+    @Inject
     private LogService logService;
 
     @SneakyThrows
@@ -182,6 +186,7 @@ public class JdbcExecutor implements ExecutorInterface {
         this.workerTaskResultQueue.receive(Executor.class, this::workerTaskResultQueue);
         this.killQueue.receive(Executor.class, this::killQueue);
         this.subflowExecutionResultQueue.receive(Executor.class, this::subflowExecutionResultQueue);
+        this.workerExecutableResultQueue.receive(Executor.class, this::workerExecutableResult);
 
         ScheduledFuture<?> scheduledDelayFuture = scheduledDelay.scheduleAtFixedRate(
             this::executionDelaySend,
@@ -324,7 +329,23 @@ public class JdbcExecutor implements ExecutorInterface {
                             Level.WARN,
                             "WorkerTrigger is being resend"
                         );
-                    } else {
+                    } else if (workerJobRunning instanceof WorkerExecutableRunning workerExecutableRunning) {
+                        workerTaskQueue.emit(WorkerExecutable.builder()
+                            .taskRun(workerExecutableRunning.getTaskRun())
+                            .task(workerExecutableRunning.getTask())
+                            .subflow(workerExecutableRunning.getSubflow())
+                            .currentFlow(workerExecutableRunning.getCurrentFlow())
+                            .executionLabels(workerExecutableRunning.getExecutionLabels())
+                            .runContext(workerExecutableRunning.getRunContext())
+                            .build());
+
+                        logService.logTaskRun(
+                            workerExecutableRunning.getTaskRun(),
+                            log,
+                            Level.WARN,
+                            "WorkerExecutable is being resend"
+                        );
+                    }else {
                         throw new IllegalArgumentException("Object is of type " + workerJobRunning.getClass() + " which should never occurs");
                     }
                 });
@@ -428,6 +449,12 @@ public class JdbcExecutor implements ExecutorInterface {
                     .forEach(workerTaskResultQueue::emit);
             }
 
+            // worker executable
+            if (!executor.getWorkerExecutables().isEmpty()) {
+                executor.getWorkerExecutables()
+                    .forEach(workerExecutable -> workerTaskQueue.emit(workerGroupService.resolveGroupFromJob(workerExecutable), workerExecutable));
+            }
+
             // subflow execution results
             if (!executor.getSubflowExecutionResults().isEmpty()) {
                 executor.getSubflowExecutionResults()
@@ -438,42 +465,6 @@ public class JdbcExecutor implements ExecutorInterface {
             if (!executor.getExecutionDelays().isEmpty()) {
                 executor.getExecutionDelays()
                     .forEach(executionDelay -> executionDelayStorage.save(executionDelay));
-            }
-
-            // subflow execution watchers
-            if (!executor.getSubflowExecutions().isEmpty()) {
-                subflowExecutionStorage.save(executor.getSubflowExecutions());
-
-                List<SubflowExecution<?>> subflowExecutionDedup = executor
-                    .getSubflowExecutions()
-                    .stream()
-                    .filter(subflowExecution -> this.deduplicateSubflowExecution(execution, executorState, subflowExecution.getParentTaskRun()))
-                    .toList();
-
-                subflowExecutionDedup
-                    .forEach(subflowExecution -> {
-                        String log = "Create new execution for flow '" +
-                            subflowExecution.getExecution()
-                                .getNamespace() + "'.'" + subflowExecution.getExecution().getFlowId() +
-                            "' with id '" + subflowExecution.getExecution().getId() + "'";
-
-                        JdbcExecutor.log.info(log);
-
-                        logQueue.emit(LogEntry.of(subflowExecution.getParentTaskRun()).toBuilder()
-                            .level(Level.INFO)
-                            .message(log)
-                            .timestamp(subflowExecution.getParentTaskRun().getState().getStartDate())
-                            .thread(Thread.currentThread().getName())
-                            .build()
-                        );
-
-                        executionQueue.emit(subflowExecution.getExecution());
-
-                        // send a running worker task result to track running vs created status
-                        if (subflowExecution.getParentTask().waitForExecution()) {
-                            sendSubflowExecutionResult(execution, subflowExecution, subflowExecution.getParentTaskRun());
-                        }
-                    });
             }
 
             return Pair.of(
@@ -487,10 +478,10 @@ public class JdbcExecutor implements ExecutorInterface {
         }
     }
 
-    private void sendSubflowExecutionResult(Execution execution, SubflowExecution<?> subflowExecution, TaskRun taskRun) {
+    private void sendSubflowExecutionResult(Execution execution, SubflowExecution subflowExecution, TaskRun taskRun) {
         Flow workerTaskFlow = this.flowRepository.findByExecution(execution);
 
-        ExecutableTask<?> executableTask = subflowExecution.getParentTask();
+        ExecutableTask<?> executableTask = (ExecutableTask<?>) subflowExecution.getParentTask();
 
         RunContext runContext = runContextFactory.of(
             workerTaskFlow,
@@ -690,6 +681,76 @@ public class JdbcExecutor implements ExecutorInterface {
         }
     }
 
+    private void workerExecutableResult(Either<WorkerExecutableResult, DeserializationException> either) {
+        if (either.isRight()) {
+            log.error("Unable to deserialize a worker executable result: {}", either.getRight().getMessage());
+            return;
+        }
+
+        WorkerExecutableResult message = either.getLeft();
+        if (skipExecutionService.skipExecution(message.getTaskRun().getExecutionId())) {
+            log.warn("Skipping execution {}", message.getTaskRun().getExecutionId());
+            return;
+        }
+
+        if (log.isDebugEnabled()) {
+            executorService.log(log, true, message);
+        }
+
+        Executor executor = executionRepository.lock(message.getTaskRun().getExecutionId(), pair -> {
+            Execution execution = pair.getLeft();
+            Executor current = new Executor(execution, null);
+
+            if (execution == null) {
+                throw new IllegalStateException("Execution state don't exist for " + message.getTaskRun().getExecutionId() + ", receive " + message);
+            }
+
+            subflowExecutionStorage.save(message.getSubflowExecutions());
+
+            // FIXME should not be needed anymore as I fix this shit
+//                List<SubflowExecution<?>> subflowExecutionDedup = message
+//                    .getSubflowExecutions()
+//                    .stream()
+//                    .filter(subflowExecution -> this.deduplicateSubflowExecution(execution, executorState, subflowExecution.getParentTaskRun()))
+//                    .toList();
+
+            message.getSubflowExecutions()
+                .forEach(subflowExecution -> {
+                    String log = "Create new execution for flow '" +
+                        subflowExecution.getExecution()
+                            .getNamespace() + "'.'" + subflowExecution.getExecution().getFlowId() +
+                        "' with id '" + subflowExecution.getExecution().getId() + "'";
+
+                    JdbcExecutor.log.info(log);
+
+                    logQueue.emit(LogEntry.of(subflowExecution.getParentTaskRun()).toBuilder()
+                        .level(Level.INFO)
+                        .message(log)
+                        .timestamp(subflowExecution.getParentTaskRun().getState().getStartDate())
+                        .thread(Thread.currentThread().getName())
+                        .build()
+                    );
+
+                    executionQueue.emit(subflowExecution.getExecution());
+
+                    // send a running worker task result to track running vs created status
+                    if (((ExecutableTask<?>) subflowExecution.getParentTask()).waitForExecution()) {
+                        sendSubflowExecutionResult(execution, subflowExecution, subflowExecution.getParentTaskRun());
+                    }
+                });
+
+            // join worker result
+            return Pair.of(
+                current,
+                pair.getRight()
+            );
+        });
+
+        if (executor != null) {
+            this.toExecution(executor);
+        }
+    }
+
     private void killQueue(Either<ExecutionKilled, DeserializationException> either) {
         if (either.isRight()) {
             log.error("Unable to deserialize a killed execution: {}", either.getRight().getMessage());
@@ -798,7 +859,7 @@ public class JdbcExecutor implements ExecutorInterface {
             subflowExecutionStorage.get(execution.getId())
                 .ifPresent(subflowExecution -> {
                     // If we didn't wait for the flow execution, the worker task execution has already been created by the Executor service.
-                    if (subflowExecution.getParentTask() != null && subflowExecution.getParentTask().waitForExecution()) {
+                    if (subflowExecution.getParentTask() != null && ((ExecutableTask<?>) subflowExecution.getParentTask()).waitForExecution()) {
                         sendSubflowExecutionResult(execution, subflowExecution, subflowExecution.getParentTaskRun().withState(execution.getState().getCurrent()));
                     }
 

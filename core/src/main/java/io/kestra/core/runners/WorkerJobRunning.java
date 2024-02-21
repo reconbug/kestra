@@ -10,8 +10,9 @@ import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY, defaultImpl = WorkerTaskRunning.class)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = WorkerTaskRunning.class, name = "task"),
-    @JsonSubTypes.Type(value = WorkerTriggerRunning.class, name = "trigger")
+    @JsonSubTypes.Type(value = WorkerTaskRunning.class, name = WorkerTaskRunning.TYPE),
+    @JsonSubTypes.Type(value = WorkerExecutableRunning.class, name = WorkerExecutableRunning.TYPE),
+    @JsonSubTypes.Type(value = WorkerTriggerRunning.class, name = WorkerTriggerRunning.TYPE)
 })
 @Data
 @SuperBuilder

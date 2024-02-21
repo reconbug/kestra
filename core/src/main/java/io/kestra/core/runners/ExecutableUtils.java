@@ -62,41 +62,25 @@ public final class ExecutableUtils {
             .build();
     }
 
-    public static <T extends Task & ExecutableTask<?>> SubflowExecution<?> subflowExecution(
+    public static SubflowExecution subflowExecution(
         RunContext runContext,
-        FlowExecutorInterface flowExecutorInterface,
-        Execution currentExecution,
+        Flow subFlow,
         Flow currentFlow,
-        T currentTask,
+        Task currentTask,
         TaskRun currentTaskRun,
         Map<String, Object> inputs,
         List<Label> labels
-    ) throws IllegalVariableEvaluationException {
-        String subflowNamespace = runContext.render(currentTask.subflowId().namespace());
-        String subflowId = runContext.render(currentTask.subflowId().flowId());
-        Optional<Integer> subflowRevision = currentTask.subflowId().revision();
-
-        io.kestra.core.models.flows.Flow flow = flowExecutorInterface.findByIdFromFlowTask(
-                currentExecution.getTenantId(),
-                subflowNamespace,
-                subflowId,
-                subflowRevision,
-                currentExecution.getTenantId(),
-                currentFlow.getNamespace(),
-                currentFlow.getId()
-            )
-            .orElseThrow(() -> new IllegalStateException("Unable to find flow '" + subflowNamespace + "'.'" + subflowId + "' with revision '" + subflowRevision.orElse(0) + "'"));
-
-        if (flow.isDisabled()) {
+    ) {
+        if (subFlow.isDisabled()) {
             throw new IllegalStateException("Cannot execute a flow which is disabled");
         }
 
-        if (flow instanceof FlowWithException fwe) {
+        if (subFlow instanceof FlowWithException fwe) {
             throw new IllegalStateException("Cannot execute an invalid flow: " + fwe.getException());
         }
 
         Map<String, Object> variables = ImmutableMap.of(
-            "executionId", currentExecution.getId(),
+            "executionId", currentTaskRun.getExecutionId(),
             "namespace", currentFlow.getNamespace(),
             "flowId", currentFlow.getId(),
             "flowRevision", currentFlow.getRevision()
@@ -105,7 +89,7 @@ public final class ExecutableUtils {
         RunnerUtils runnerUtils = runContext.getApplicationContext().getBean(RunnerUtils.class);
         Execution execution = runnerUtils
             .newExecution(
-                flow,
+                subFlow,
                 (f, e) -> runnerUtils.typedInputs(f, e, inputs),
                 labels)
             .withTrigger(ExecutionTrigger.builder()

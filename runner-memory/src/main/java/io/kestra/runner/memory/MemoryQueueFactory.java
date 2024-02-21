@@ -69,6 +69,13 @@ public class MemoryQueueFactory implements QueueFactoryInterface {
 
     @Override
     @Singleton
+    @Named(QueueFactoryInterface.WORKEREXECUTABLERESULT_NAMED)
+    public QueueInterface<WorkerExecutableResult> workerExecutableResult() {
+        return new MemoryQueue<>(WorkerExecutableResult.class, applicationContext);
+    }
+
+    @Override
+    @Singleton
     @Named(QueueFactoryInterface.WORKERTASKLOG_NAMED)
     public QueueInterface<LogEntry> logEntry() {
         return new MemoryQueue<>(LogEntry.class, applicationContext);

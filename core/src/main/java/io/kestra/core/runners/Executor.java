@@ -27,7 +27,8 @@ public class Executor {
     private final List<WorkerTaskResult> workerTaskResults = new ArrayList<>();
     private final List<ExecutionDelay> executionDelays = new ArrayList<>();
     private WorkerTaskResult joinedWorkerTaskResult;
-    private final List<SubflowExecution<?>> subflowExecutions = new ArrayList<>();
+    private final List<WorkerExecutable> workerExecutables = new ArrayList<>();
+    private final List<SubflowExecution> subflowExecutions = new ArrayList<>();
     private final List<SubflowExecutionResult> subflowExecutionResults = new ArrayList<>();
     private SubflowExecutionResult joinedSubflowExecutionResult;
     private ExecutionRunning executionRunning;
@@ -114,7 +115,14 @@ public class Executor {
         return this;
     }
 
-    public Executor withSubflowExecutions(List<SubflowExecution<?>> subflowExecutions, String from) {
+    public Executor withWorkerExecutables(List<WorkerExecutable> workerExecutables, String from) {
+        this.workerExecutables.addAll(workerExecutables);
+        this.from.add(from);
+
+        return this;
+    }
+
+    public Executor withSubflowExecutions(List<SubflowExecution> subflowExecutions, String from) {
         this.subflowExecutions.addAll(subflowExecutions);
         this.from.add(from);
 

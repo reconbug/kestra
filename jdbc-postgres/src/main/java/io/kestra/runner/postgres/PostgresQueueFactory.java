@@ -69,6 +69,13 @@ public class PostgresQueueFactory implements QueueFactoryInterface {
 
     @Override
     @Singleton
+    @Named(QueueFactoryInterface.WORKEREXECUTABLERESULT_NAMED)
+    public QueueInterface<WorkerExecutableResult> workerExecutableResult() {
+        return new PostgresQueue<>(WorkerExecutableResult.class, applicationContext);
+    }
+
+    @Override
+    @Singleton
     @Named(QueueFactoryInterface.WORKERTASKLOG_NAMED)
     @Bean(preDestroy = "close")
     public QueueInterface<LogEntry> logEntry() {

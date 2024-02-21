@@ -19,14 +19,14 @@ import java.util.Optional;
 
 public abstract class AbstractJdbcSubflowExecutionStorage extends AbstractJdbcRepository {
     private final static ObjectMapper MAPPER = JdbcMapper.of();
-    protected io.kestra.jdbc.AbstractJdbcRepository<SubflowExecution<?>> jdbcRepository;
+    protected io.kestra.jdbc.AbstractJdbcRepository<SubflowExecution> jdbcRepository;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public AbstractJdbcSubflowExecutionStorage(io.kestra.jdbc.AbstractJdbcRepository jdbcRepository) {
         this.jdbcRepository = jdbcRepository;
     }
 
-    public Optional<SubflowExecution<?>> get(String executionId) {
+    public Optional<SubflowExecution> get(String executionId) {
         return this.jdbcRepository
             .getDslContextWrapper()
             .transactionResult(configuration -> {
@@ -53,7 +53,7 @@ public abstract class AbstractJdbcSubflowExecutionStorage extends AbstractJdbcRe
             });
     }
 
-    public void save(List<SubflowExecution<?>> subflowExecutions) {
+    public void save(List<SubflowExecution> subflowExecutions) {
         this.jdbcRepository
             .getDslContextWrapper()
             .transaction(configuration -> {
@@ -67,7 +67,7 @@ public abstract class AbstractJdbcSubflowExecutionStorage extends AbstractJdbcRe
             });
     }
 
-    public void delete(SubflowExecution<?> subflowExecution) {
+    public void delete(SubflowExecution subflowExecution) {
         this.jdbcRepository.delete(subflowExecution);
     }
 }

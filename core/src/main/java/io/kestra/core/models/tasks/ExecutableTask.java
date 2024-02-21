@@ -1,6 +1,8 @@
 package io.kestra.core.models.tasks;
 
+import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.exceptions.InternalException;
+import io.kestra.core.models.Label;
 import io.kestra.core.models.executions.Execution;
 import io.kestra.core.models.executions.TaskRun;
 import io.kestra.core.models.flows.Flow;
@@ -20,9 +22,10 @@ public interface ExecutableTask<T extends Output>{
      * Creates a list of SubflowExecution for this task definition.
      * Each SubflowExecution will generate a subflow execution.
      */
-    List<SubflowExecution<?>> createSubflowExecutions(RunContext runContext,
-                                                      FlowExecutorInterface flowExecutorInterface,
-                                                      Flow currentFlow, Execution currentExecution,
+    List<SubflowExecution> createSubflowExecutions(RunContext runContext,
+                                                      Flow subFlow,
+                                                      Flow currentFlow,
+                                                      List<Label> currentExecutionLabels,
                                                       TaskRun currentTaskRun) throws InternalException;
 
     /**
@@ -42,6 +45,19 @@ public interface ExecutableTask<T extends Output>{
      * @return the subflow identifier, used by the flow topology and related dependency code.
      */
     SubflowId subflowId();
+
+    /**
+     * @return the subflow identifier, rendered via the run context.
+     */
+    default SubflowId subflowId(RunContext runContext) throws IllegalVariableEvaluationException {
+        SubflowId subflowId = subflowId();
+
+        return new SubflowId(
+            runContext.render(subflowId.namespace()),
+            runContext.render(subflowId.flowId()),
+            subflowId.revision()
+        );
+    }
 
     record SubflowId(String namespace, String flowId, Optional<Integer> revision) {
         public String flowUid() {

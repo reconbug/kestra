@@ -36,7 +36,7 @@ public class QueueService {
         } else if (object.getClass() == MultipleConditionWindow.class) {
             return ((MultipleConditionWindow) object).uid();
         } else if (object.getClass() == SubflowExecution.class) {
-            return ((SubflowExecution<?>) object).getExecution().getId();
+            return ((SubflowExecution) object).getExecution().getId();
         } else if (object.getClass() == SubflowExecutionResult.class) {
             return ((SubflowExecutionResult) object).getParentTaskRun().getId();
         } else if (object.getClass() == ExecutionDelay.class) {
@@ -59,6 +59,12 @@ public class QueueService {
             return ((WorkerTriggerResult) object).getTriggerContext().uid();
         } else if (object.getClass() == ExecutionQueued.class) {
             return ((ExecutionQueued) object).uid();
+        } else if (object.getClass() == WorkerExecutable.class) {
+            return ((WorkerExecutable) object).uid();
+        } else if (object.getClass() == WorkerExecutableRunning.class) {
+            return ((WorkerExecutableRunning) object).uid();
+        } else if (object.getClass() == WorkerExecutableResult.class) {
+            return ((WorkerExecutableResult) object).uid();
         } else {
             throw new IllegalArgumentException("Unknown type '" + object.getClass().getName() + "'");
         }

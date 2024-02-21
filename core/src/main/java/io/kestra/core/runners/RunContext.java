@@ -461,13 +461,18 @@ public class RunContext {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public RunContext forWorker(ApplicationContext applicationContext, WorkerTask workerTask) {
+        return forWorker(applicationContext, workerTask.getTask(), workerTask.getTaskRun());
+    }
+
+    public RunContext forWorker(ApplicationContext applicationContext, WorkerExecutable executable) {
+        return forWorker(applicationContext, executable.getTask(), executable.getTaskRun());
+    }
+
+    @SuppressWarnings("unchecked")
+    private RunContext forWorker(ApplicationContext applicationContext, Task task, TaskRun taskRun) {
         this.initBean(applicationContext);
-
-        final TaskRun taskRun = workerTask.getTaskRun();
-
-        this.initLogger(taskRun, workerTask.getTask());
+        this.initLogger(taskRun, task);
 
         Map<String, Object> clone = new HashMap<>(this.variables);
 
@@ -475,7 +480,7 @@ public class RunContext {
         clone.put("taskrun", this.variables(taskRun));
 
         clone.remove("task");
-        clone.put("task", this.variables(workerTask.getTask()));
+        clone.put("task", this.variables(task));
 
         if (clone.containsKey("workerTaskrun") && ((Map<String, Object>) clone.get("workerTaskrun")).containsKey("value")) {
             Map<String, Object> workerTaskrun = ((Map<String, Object>) clone.get("workerTaskrun"));

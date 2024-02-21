@@ -12,6 +12,7 @@ import io.kestra.core.metrics.MetricRegistry;
 import io.kestra.core.models.Label;
 import io.kestra.core.models.executions.*;
 import io.kestra.core.models.flows.State;
+import io.kestra.core.models.tasks.ExecutableTask;
 import io.kestra.core.models.tasks.Output;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
@@ -32,6 +33,8 @@ import io.kestra.core.utils.Hashing;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.inject.qualifiers.Qualifiers;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +69,8 @@ public class Worker implements Runnable, AutoCloseable {
     private final QueueInterface<ExecutionKilled> executionKilledQueue;
     private final QueueInterface<MetricEntry> metricEntryQueue;
     private final MetricRegistry metricRegistry;
+    private final QueueInterface<SubflowExecutionResult> subflowExecutionResultQueue;
+    private final QueueInterface<WorkerExecutableResult> workerExecutableResultQueue;
 
     private final Set<String> killedExecution = ConcurrentHashMap.newKeySet();
 
@@ -107,6 +112,14 @@ public class Worker implements Runnable, AutoCloseable {
             Qualifiers.byName(QueueFactoryInterface.METRIC_QUEUE)
         );
         this.metricRegistry = applicationContext.getBean(MetricRegistry.class);
+        this.subflowExecutionResultQueue = (QueueInterface<SubflowExecutionResult>) applicationContext.getBean(
+            QueueInterface.class,
+            Qualifiers.byName(QueueFactoryInterface.SUBFLOWEXECUTIONRESULT_NAMED)
+        );
+        this.workerExecutableResultQueue = (QueueInterface<WorkerExecutableResult>) applicationContext.getBean(
+            QueueInterface.class,
+            Qualifiers.byName(QueueFactoryInterface.WORKEREXECUTABLERESULT_NAMED)
+        );
 
         ExecutorsUtils executorsUtils = applicationContext.getBean(ExecutorsUtils.class);
         this.executors = executorsUtils.maxCachedThreadPool(thread, "worker");
@@ -148,12 +161,13 @@ public class Worker implements Runnable, AutoCloseable {
                         return;
                     }
 
-                    WorkerJob workerTask = either.getLeft();
-                    if (workerTask instanceof WorkerTask task) {
+                    WorkerJob workerJob = either.getLeft();
+                    if (workerJob instanceof WorkerTask task) {
                         handleTask(task);
-                    }
-                    else if (workerTask instanceof WorkerTrigger trigger) {
+                    } else if (workerJob instanceof WorkerTrigger trigger) {
                         handleTrigger(trigger);
+                    } else if (workerJob instanceof WorkerExecutable executable) {
+                        handleExecutable(executable);
                     }
                 });
             }
@@ -165,11 +179,11 @@ public class Worker implements Runnable, AutoCloseable {
             try {
                 var json = MAPPER.readTree(deserializationException.getRecord());
                 var type = json.get("type") != null ? json.get("type").asText() : null;
-                if ("task".equals(type)) {
+                if (WorkerTask.TYPE.equals(type) || WorkerExecutable.TYPE.equals(type)) {
                     // try to deserialize the taskRun to fail it
                     var taskRun = MAPPER.treeToValue(json.get("taskRun"), TaskRun.class);
                     this.workerTaskResultQueue.emit(new WorkerTaskResult(taskRun.fail()));
-                } else if ("trigger".equals(type)) {
+                } else if (WorkerTrigger.TYPE.equals(type)) {
                     // try to deserialize the triggerContext to fail it
                     var triggerContext = MAPPER.treeToValue(json.get("triggerContext"), TriggerContext.class);
                     var workerTriggerResult = WorkerTriggerResult.builder().triggerContext(triggerContext).success(false).execution(Optional.empty()).build();
@@ -295,6 +309,62 @@ public class Worker implements Runnable, AutoCloseable {
                     this.evaluateTriggerRunningCount.get(workerTrigger.getTriggerContext().uid()).addAndGet(-1);
                 }
             );
+    }
+
+    private void handleExecutable(WorkerExecutable executable) {
+        // TODO add metric
+        ExecutableTask<?> executableTask = (ExecutableTask<?>) executable.getTask();
+        RunContext runContext = executable.getRunContext().forWorker(this.applicationContext, executable);
+
+        try {
+            List<SubflowExecution> subflowExecutions = executableTask.createSubflowExecutions(
+                runContext,
+                executable.getSubflow(),
+                executable.getCurrentFlow(),
+                executable.getExecutionLabels(),
+                executable.getTaskRun()
+            );
+
+            if (subflowExecutions.isEmpty()) {
+                WorkerTaskResult success = WorkerTaskResult.builder()
+                    .taskRun(executable.getTaskRun().withState(State.Type.SUCCESS)
+                        .withAttempts(Collections.singletonList(
+                            TaskRunAttempt.builder().state(new State().withState(State.Type.SUCCESS)).build()
+                        ))
+                    )
+                    .build();
+                this.workerTaskResultQueue.emit(success);
+            } else {
+                if (!executableTask.waitForExecution()) {
+                    // send immediately all workerTaskResult to end the executable task
+                    for (SubflowExecution subflowExecution : subflowExecutions) {
+                        Optional<SubflowExecutionResult> subflowExecutionResult = executableTask.createSubflowExecutionResult(
+                            runContext,
+                            subflowExecution.getParentTaskRun().withState(State.Type.SUCCESS),
+                            executable.getCurrentFlow(),
+                            subflowExecution.getExecution()
+                        );
+                        subflowExecutionResult.ifPresent(subflowExecutionResultQueue::emit);
+                    }
+                }
+                WorkerExecutableResult workerExecutableResult = WorkerExecutableResult.builder()
+                    .taskRun(executable.getTaskRun())
+                    .subflowExecutions(subflowExecutions)
+                    .build();
+                workerExecutableResultQueue.emit(workerExecutableResult);
+            }
+        }
+        catch (Exception e) {
+            logError(runContext, executable, e);
+            WorkerTaskResult failed = WorkerTaskResult.builder()
+                .taskRun(executable.getTaskRun().withState(State.Type.FAILED)
+                    .withAttempts(Collections.singletonList(
+                        TaskRunAttempt.builder().state(new State().withState(State.Type.FAILED)).build()
+                    ))
+                )
+                .build();
+            this.workerTaskResultQueue.emit(failed);
+        }
     }
 
     private static ZonedDateTime now() {
@@ -486,6 +556,23 @@ public class Worker implements Runnable, AutoCloseable {
             Level.WARN,
             "[date: {}] Evaluate Failed with error '{}'",
             workerTrigger.getTriggerContext().getDate(),
+            e.getMessage(),
+            e
+        );
+
+        if (logger.isTraceEnabled()) {
+            logger.trace(Throwables.getStackTraceAsString(e));
+        }
+    }
+
+    private void logError(RunContext runContext , WorkerExecutable workerExecutable, Throwable e) {
+        Logger logger = runContext.logger();
+
+        logService.logTaskRun(
+            workerExecutable.getTaskRun(),
+            logger,
+            Level.WARN,
+            "[date: {}] Evaluate Failed with error '{}'",
             e.getMessage(),
             e
         );

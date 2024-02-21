@@ -631,10 +631,9 @@ public class ExecutorService {
     }
 
     private Executor handleExecutableTask(final Executor executor) {
-        List<SubflowExecution<?>> executions = new ArrayList<>();
-        List<SubflowExecutionResult> subflowExecutionResults = new ArrayList<>();
+        List<WorkerExecutable> workerExecutables = new ArrayList<>();
 
-        boolean haveFlows = executor.getWorkerTasks()
+        boolean haveExecutables = executor.getWorkerTasks()
             .removeIf(workerTask -> {
                 if (!(workerTask.getTask() instanceof ExecutableTask)) {
                     return false;
@@ -658,30 +657,27 @@ public class ExecutorService {
                         executor.getExecution(),
                         executableTaskRun
                     );
-                    List<SubflowExecution<?>> subflowExecutions = executableTask.createSubflowExecutions(runContext, flowExecutorInterface(), executor.getFlow(), executor.getExecution(), executableTaskRun);
-                    if (subflowExecutions.isEmpty()) {
-                        // if no executions we move the task to SUCCESS immediately
-                        executor.withExecution(
-                            executor
-                                .getExecution()
-                                .withTaskRun(executableTaskRun.withState(State.Type.SUCCESS)),
-                            "handleExecutableTaskRunning.noExecution"
-                        );
-                    } else {
-                        executions.addAll(subflowExecutions);
-                        if (!executableTask.waitForExecution()) {
-                            // send immediately all workerTaskResult to ends the executable task
-                            for (SubflowExecution<?> subflowExecution : subflowExecutions) {
-                                Optional<SubflowExecutionResult> subflowExecutionResult = executableTask.createSubflowExecutionResult(
-                                    runContext,
-                                    subflowExecution.getParentTaskRun().withState(State.Type.SUCCESS),
-                                    executor.getFlow(),
-                                    subflowExecution.getExecution()
-                                );
-                                subflowExecutionResult.ifPresent(subflowExecutionResults::add);
-                            }
-                        }
-                    }
+                    ExecutableTask.SubflowId subflowId = executableTask.subflowId(runContext);
+                    io.kestra.core.models.flows.Flow subFlow = flowExecutorInterface().findByIdFromFlowTask(
+                            executableTaskRun.getTenantId(),
+                            subflowId.namespace(),
+                            subflowId.flowId(),
+                            subflowId.revision(),
+                            executableTaskRun.getTenantId(),
+                            executor.getFlow().getNamespace(),
+                            executor.getFlow().getId()
+                        )
+                        .orElseThrow(() -> new IllegalStateException("Unable to find flow '" + subflowId.namespace() + "'.'" + subflowId.flowId() + "' with revision '" + subflowId.revision().orElse(0) + "'"));
+
+                    WorkerExecutable workerExecutable = WorkerExecutable.builder()
+                        .runContext(runContext)
+                        .task(executableTask)
+                        .taskRun(executableTaskRun)
+                        .currentFlow(executor.getFlow())
+                        .subflow(subFlow)
+                        .executionLabels(executor.getExecution().getLabels())
+                        .build();
+                    workerExecutables.add(workerExecutable);
                 } catch (Exception e) {
                     WorkerTaskResult failed = WorkerTaskResult.builder()
                         .taskRun(workerTask.getTaskRun().withState(State.Type.FAILED)
@@ -697,17 +693,11 @@ public class ExecutorService {
                 return true;
             });
 
-        if (!haveFlows) {
+        if (!haveExecutables) {
             return executor;
         }
 
-        Executor resultExecutor = executor.withSubflowExecutions(executions, "handleExecutableTask");
-
-        if (!subflowExecutionResults.isEmpty()) {
-            resultExecutor = executor.withSubflowExecutionResults(subflowExecutionResults, "handleExecutableTaskWorkerTaskResults");
-        }
-
-        return resultExecutor;
+        return executor.withWorkerExecutables(workerExecutables, "handleExecutableTask");
     }
 
     private Executor handleExecutionUpdatingTask(final Executor executor) {
@@ -863,6 +853,15 @@ public class ExecutorService {
             value.getClass().getSimpleName(),
             value.getExecutionId(),
             value
+        );
+    }
+
+    public void log(Logger log, boolean in, WorkerExecutableResult value) {
+        log.debug(
+            "{} {} : {}",
+            in ? "<< IN " : ">> OUT",
+            value.getClass().getSimpleName(),
+            value.getTaskRun().toStringState()
         );
     }
 }
