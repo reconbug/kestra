@@ -50,22 +50,23 @@ labels:
   env: dev
   project: myproject
 
-tasks:
-  - id: extract
-    type: io.kestra.plugin.fs.http.Request
-    uri: https://dummyjson.com/products
-    method: GET
+inputs:
+  - id: payload
+    type: JSON
+    defaults: |
+      [{"name": "kestra", "rating": "best in class"}]
 
-  - id: load
+tasks:
+  - id: send_data
     type: io.kestra.plugin.fs.http.Request
     uri: https://reqres.in/api/products
     method: POST
     contentType: application/json
-    body: "{{ outputs.extract.body }}"
+    body: "{{ inputs.payload }}"
 
-  - id: enjoy
+  - id: print_status
     type: io.kestra.core.tasks.log.Log
-    message: Kestra team wishes you a great day!
+    message: hello on {{ outputs.send_data.headers.date | first }}
 
 triggers:
   - id: daily
