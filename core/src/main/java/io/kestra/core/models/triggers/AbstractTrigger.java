@@ -1,6 +1,5 @@
 package io.kestra.core.models.triggers;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -31,7 +30,6 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Introspected
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 abstract public class AbstractTrigger {
     @NotNull
     @NotBlank
