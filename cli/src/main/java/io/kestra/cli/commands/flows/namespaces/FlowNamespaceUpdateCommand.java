@@ -2,7 +2,6 @@ package io.kestra.cli.commands.flows.namespaces;
 
 import io.kestra.cli.commands.AbstractServiceNamespaceUpdateCommand;
 import io.kestra.cli.commands.flows.FlowValidateCommand;
-import io.kestra.cli.commands.flows.IncludeHelperExpander;
 import io.kestra.core.serializers.YamlFlowParser;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
@@ -15,11 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import jakarta.validation.ConstraintViolationException;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.kestra.core.utils.Rethrow.throwFunction;
 
 @CommandLine.Command(
     name = "update",
@@ -40,13 +40,7 @@ public class FlowNamespaceUpdateCommand extends AbstractServiceNamespaceUpdateCo
             List<String> flows = files
                 .filter(Files::isRegularFile)
                 .filter(YamlFlowParser::isValidExtension)
-                .map(path -> {
-                    try {
-                        return IncludeHelperExpander.expand(Files.readString(path, Charset.defaultCharset()), path.getParent());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(throwFunction(path -> Files.readString(path, Charset.defaultCharset())))
                 .collect(Collectors.toList());
 
             String body = "";
