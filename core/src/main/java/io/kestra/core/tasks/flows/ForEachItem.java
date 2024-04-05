@@ -31,9 +31,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -292,6 +294,14 @@ public class ForEachItem extends Task implements FlowableTask<VoidOutput>, Child
     @PluginProperty
     private final Boolean inheritLabels = false;
 
+    @Builder.Default
+    @Schema(
+        title = "Whether the items should be passed to the subflow as an internal storage URI or plain data.",
+        description = "By default, the items will be passed to the subflow as an internal storage URI, for convenience it can be passed as a string but be careful that is is advise only for small dataset, for eg when the size of the batches is 1 or very small."
+    )
+    @PluginProperty
+    private final Boolean store = true;
+
     @Valid
     private List<Task> errors;
 
@@ -338,7 +348,7 @@ public class ForEachItem extends Task implements FlowableTask<VoidOutput>, Child
     public List<Task> getTasks() {
         return List.of(
             new ForEachItemSplit(this.getId(), this.items, this.batch),
-            new ForEachItemExecutable(this.getId(), this.inputs, this.inheritLabels, this.labels, this.wait, this.transmitFailed,
+            new ForEachItemExecutable(this.getId(), this.inputs, this.inheritLabels, this.labels, this.wait, this.transmitFailed, this.store,
                 new ExecutableTask.SubflowId(this.namespace, this.flowId, Optional.ofNullable(this.revision))
             ),
             new ForEachItemMergeOutputs(this.getId())
@@ -402,14 +412,16 @@ public class ForEachItem extends Task implements FlowableTask<VoidOutput>, Child
         private Map<String, String> labels;
         private Boolean wait;
         private Boolean transmitFailed;
+        private Boolean store;
         private SubflowId subflowId;
 
-        private ForEachItemExecutable(String parentId, Map<String, Object> inputs, Boolean inheritLabels, Map<String, String> labels, Boolean wait, Boolean transmitFailed, SubflowId subflowId) {
+        private ForEachItemExecutable(String parentId, Map<String, Object> inputs, Boolean inheritLabels, Map<String, String> labels, Boolean wait, Boolean transmitFailed, Boolean store, SubflowId subflowId) {
             this.inputs = inputs;
             this.inheritLabels = inheritLabels;
             this.labels = labels;
             this.wait = wait;
             this.transmitFailed = transmitFailed;
+            this.store = store;
             this.subflowId = subflowId;
 
             this.id = parentId + SUFFIX;
@@ -441,7 +453,7 @@ public class ForEachItem extends Task implements FlowableTask<VoidOutput>, Child
                             int iteration = currentIteration.getAndIncrement();
                             // these are special variable that can be passed to the subflow
                             Map<String, Object> itemsVariable = Map.of("taskrun",
-                                Map.of("items", split, "iteration", iteration));
+                                Map.of("items", this.store ? split : read(runContext, split), "iteration", iteration));
                             Map<String, Object> inputs = new HashMap<>();
                             if (this.inputs != null) {
                                 inputs.putAll(runContext.render(this.inputs, itemsVariable));
@@ -479,8 +491,14 @@ public class ForEachItem extends Task implements FlowableTask<VoidOutput>, Child
                         }
                     ))
                     .toList();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new InternalException(e);
+            }
+        }
+
+        private String read(RunContext runContext, URI split) throws IOException {
+            try (var is = runContext.storage().getFile(split)) {
+                return IOUtils.toString(is, StandardCharsets.UTF_8);
             }
         }
 
