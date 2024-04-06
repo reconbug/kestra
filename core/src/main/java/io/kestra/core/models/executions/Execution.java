@@ -97,6 +97,12 @@ public class Execution implements DeletedInterface, TenantInterface {
     ExecutionMetadata metadata;
 
     /**
+     * The sequence id should be incremented each time the execution is persisted after mutation.
+     */
+    @Builder.Default
+    Long seqId = null;
+
+    /**
      * Factory method for constructing a new {@link Execution} object for the given {@link Flow} and inputs.
      *
      * @param flow   The Flow.
@@ -155,6 +161,33 @@ public class Execution implements DeletedInterface, TenantInterface {
         }
     }
 
+    /**
+     * Gets a new {@link Execution} with an incremented sequence id.
+     *
+     * @return  a new {@link Execution}.
+     */
+    public Execution withNextSeqId() {
+        return new Execution(
+            this.tenantId,
+            this.id,
+            this.namespace,
+            this.flowId,
+            this.flowRevision,
+            this.taskRunList,
+            this.inputs,
+            this.outputs,
+            this.labels,
+            this.variables,
+            this.state,
+            this.parentId,
+            this.originalId,
+            this.trigger,
+            this.deleted,
+            this.metadata,
+            this.seqId == null ? 1 : this.seqId + 1
+        );
+    }
+
     public Execution withState(State.Type state) {
         return new Execution(
             this.tenantId,
@@ -172,7 +205,8 @@ public class Execution implements DeletedInterface, TenantInterface {
             this.originalId,
             this.trigger,
             this.deleted,
-            this.metadata
+            this.metadata,
+            this.seqId
         );
     }
 
@@ -205,7 +239,8 @@ public class Execution implements DeletedInterface, TenantInterface {
             this.originalId,
             this.trigger,
             this.deleted,
-            this.metadata
+            this.metadata,
+            this.seqId
         );
     }
 
@@ -226,7 +261,8 @@ public class Execution implements DeletedInterface, TenantInterface {
             this.originalId,
             this.trigger,
             this.deleted,
-            this.metadata
+            this.metadata,
+            this.seqId
         );
     }
 

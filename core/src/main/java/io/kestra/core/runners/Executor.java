@@ -146,7 +146,7 @@ public class Executor {
 
     public Executor serialize() {
         return new Executor(
-            this.execution,
+            this.execution.withNextSeqId(),
             this.offset
         );
     }
