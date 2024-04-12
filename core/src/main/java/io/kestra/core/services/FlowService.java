@@ -2,6 +2,7 @@ package io.kestra.core.services;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kestra.core.models.executions.Execution;
 import io.kestra.core.models.flows.Flow;
 import io.kestra.core.models.flows.FlowWithSource;
@@ -37,6 +38,10 @@ import java.util.stream.StreamSupport;
 @Slf4j
 public class FlowService {
     private final IllegalStateException NO_REPOSITORY_EXCEPTION = new IllegalStateException("No flow repository found. Make sure the `kestra.repository.type` property is set.");
+
+    private static final ObjectMapper NON_DEFAULT_OBJECT_MAPPER = JacksonMapper.ofJson()
+        .copy()
+        .setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
 
     @Inject
     RunContextFactory runContextFactory;
@@ -237,11 +242,7 @@ public class FlowService {
 
     @SneakyThrows
     private static String toYamlWithoutDefault(Object object) throws JsonProcessingException {
-        String json = JacksonMapper
-            .ofJson()
-            .copy()
-            .setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
-            .writeValueAsString(object);
+        String json = NON_DEFAULT_OBJECT_MAPPER.writeValueAsString(object);
 
         Object map = fixSnakeYaml(JacksonMapper.toMap(json));
 
