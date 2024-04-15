@@ -6,6 +6,7 @@ import io.kestra.core.runners.pebble.JsonWriter;
 import io.kestra.core.runners.pebble.PebbleLruCache;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.error.AttributeNotFoundException;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 @Singleton
 public class VariableRenderer {
     private static final Pattern RAW_PATTERN = Pattern.compile("(\\{%-*\\s*raw\\s*-*%}(.*?)\\{%-*\\s*endraw\\s*-*%})");
-    public static final int MAX_RENDERING_AMOUNT = 100;
+    private static final int MAX_RENDERING_AMOUNT = 100;
 
     private final PebbleEngine pebbleEngine;
     private final VariableConfiguration variableConfiguration;
@@ -37,7 +38,7 @@ public class VariableRenderer {
 
         PebbleEngine.Builder pebbleBuilder = new PebbleEngine.Builder()
             .registerExtensionCustomizer(ExtensionCustomizer::new)
-            .strictVariables(true)
+            .strictVariables(this.variableConfiguration.strictRendering)
             .cacheActive(this.variableConfiguration.getCacheEnabled())
 
             .newLineTrimming(false)
@@ -230,10 +231,12 @@ public class VariableRenderer {
             this.cacheEnabled = true;
             this.cacheSize = 1000;
             this.recursiveRendering = false;
+            this.strictRendering = true;
         }
 
         Boolean cacheEnabled;
         Integer cacheSize;
         Boolean recursiveRendering;
+        Boolean strictRendering;
     }
 }

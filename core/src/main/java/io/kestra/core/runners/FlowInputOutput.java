@@ -193,6 +193,10 @@ public class FlowInputOutput {
         if (data.getType() == null) {
             return Optional.of(new AbstractMap.SimpleEntry<>(data.getId(), current));
         }
+        if (current == null || current == "") { // trick for Pebble using "" when strictVariable = false
+            return Optional.empty();
+        }
+
         final String loggableType = data instanceof Input ? "input" : "output";
         switch (data.getType()) {
             case ENUM, STRING -> {

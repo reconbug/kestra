@@ -1,16 +1,17 @@
-package io.kestra.core.runners.pebble;
+package io.kestra.core.runners;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
-import io.kestra.core.runners.VariableRenderer;
 import io.kestra.core.utils.Rethrow;
+import io.micronaut.context.ApplicationContext;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import jakarta.inject.Inject;
@@ -22,7 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @MicronautTest
 class PebbleVariableRendererTest {
     @Inject
-    VariableRenderer variableRenderer;
+    private VariableRenderer variableRenderer;
+
+    @Inject
+    private ApplicationContext applicationContext;
 
     @Test
     void out() throws IllegalVariableEvaluationException {
@@ -328,5 +332,20 @@ class PebbleVariableRendererTest {
             variableRenderer.render(map, Map.of()),
             is(map)
         );
+    }
+
+    @Test
+    void strictVariables() throws IllegalVariableEvaluationException {
+        var nonStrictConfig = new VariableRenderer.VariableConfiguration();
+        nonStrictConfig.strictRendering = false;
+        var nonStrictRenderer = new VariableRenderer(applicationContext, nonStrictConfig);
+
+        var exception  = assertThrows(IllegalVariableEvaluationException.class, () -> {
+            variableRenderer.render("{{ outputs }}", Collections.emptyMap());
+        });
+        assertThat(exception.getMessage(), startsWith("Missing variable: 'outputs' "));
+
+        var rendered = nonStrictRenderer.render("{{ outputs }}", Collections.emptyMap());
+        assertThat(rendered, is(""));
     }
 }
