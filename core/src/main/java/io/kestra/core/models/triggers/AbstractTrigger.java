@@ -1,5 +1,6 @@
 package io.kestra.core.models.triggers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,13 +24,13 @@ import lombok.experimental.SuperBuilder;
 import org.slf4j.event.Level;
 
 import java.util.List;
-import java.util.Map;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @SuperBuilder
 @Getter
 @NoArgsConstructor
 @Introspected
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 abstract public class AbstractTrigger {
     @NotNull
     @NotBlank

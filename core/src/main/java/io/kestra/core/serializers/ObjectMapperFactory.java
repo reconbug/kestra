@@ -72,6 +72,10 @@ public class ObjectMapperFactory extends io.micronaut.jackson.ObjectMapperFactor
             objectMapper.setTypeFactory(tf);
         }
 
+
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
         final boolean hasConfiguration = jacksonConfiguration != null;
         if (!hasConfiguration || jacksonConfiguration.isModuleScan()) {
             objectMapper.findAndRegisterModules();
