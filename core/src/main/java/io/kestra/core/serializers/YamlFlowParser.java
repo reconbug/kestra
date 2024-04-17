@@ -1,5 +1,6 @@
 package io.kestra.core.serializers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -24,7 +25,11 @@ import java.util.Set;
 public class YamlFlowParser {
     private static final ObjectMapper MAPPER = JacksonMapper.ofYaml()
         .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
-        .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+        .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+        .setSerializationInclusion(JsonInclude.Include.ALWAYS);
+
+    private static final ObjectMapper NON_STRICT_MAPPER = MAPPER.copy()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public static boolean isValidExtension(Path path) {
         return FilenameUtils.getExtension(path.toFile().getAbsolutePath()).equals("yaml") || FilenameUtils.getExtension(path.toFile().getAbsolutePath()).equals("yml");
@@ -36,12 +41,7 @@ public class YamlFlowParser {
 
 
     public <T> T parse(Map<String, Object> input, Class<T> cls, Boolean strict) {
-        ObjectMapper currentMapper = MAPPER;
-
-        if (!strict) {
-            currentMapper = MAPPER.copy()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        }
+        ObjectMapper currentMapper = strict ? MAPPER : NON_STRICT_MAPPER;
 
         try {
             return currentMapper.convertValue(input, cls);

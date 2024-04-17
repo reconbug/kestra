@@ -2,6 +2,7 @@ package io.kestra.core.models.flows;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -89,6 +90,7 @@ public class Flow implements DeletedInterface, TenantInterface {
     @Valid
     List<Input<?>> inputs;
 
+    @JsonInclude // allow including null value in variables
     Map<String, Object> variables;
 
     @Valid

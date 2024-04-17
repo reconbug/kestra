@@ -1,5 +1,6 @@
 package io.kestra.core.runners.pebble.filters;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,7 +22,8 @@ public class JsonFilter implements Filter {
         .registerModule(new JavaTimeModule())
         .registerModule(new Jdk8Module())
         .registerModule(new ParameterNamesModule())
-        .registerModules(new GuavaModule());
+        .registerModules(new GuavaModule())
+        .setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
     @Override
     public List<String> getArgumentNames() {
