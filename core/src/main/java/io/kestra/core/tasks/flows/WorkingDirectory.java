@@ -27,11 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -194,9 +190,9 @@ import jakarta.validation.constraints.NotNull;
 )
 @WorkingDirectoryTaskValidation
 public class WorkingDirectory extends Sequential implements NamespaceFilesInterface, InputFilesInterface, OutputFilesInterface {
-    
+
     private static final String OUTPUTS_FILE = "outputs.ion";
-    
+
     @Schema(
         title = "Cache configuration.",
         description = """
@@ -370,36 +366,36 @@ public class WorkingDirectory extends Sequential implements NamespaceFilesInterf
                 runContext.logger().error("Unable to execute WorkingDirectory post actions", e);
             }
     }
-    
+
     @Override
     public Outputs outputs(final RunContext runContext) throws IOException {
         URI uri = URI.create("kestra://" + runContext.storage().getContextBaseURI() + "/").resolve(OUTPUTS_FILE);
-        
+
         if (!runContext.storage().isFileExist(uri)) {
             // no outputs files was captured for that tasks
             return null;
         }
-        
-        try(InputStream is = runContext.storage().getFile(uri)) {
+
+        try(Reader is = new InputStreamReader(runContext.storage().getFile(uri))) {
             Map<String, URI> outputs = FileSerde
                 .readAll(is, new TypeReference<Map<String, URI>>() {})
                 .blockFirst();
             return new Outputs(outputs);
         }
     }
-    
+
     @Getter
     public static class Outputs extends VoidOutput {
         @Schema(
             title = "The URIs for output files."
         )
         private final Map<String, URI> outputFiles;
-        
+
         public Outputs(final Map<String, URI> outputsFiles) {
             this.outputFiles = outputsFiles;
         }
     }
-    
+
     @SuperBuilder
     @ToString
     @EqualsAndHashCode
