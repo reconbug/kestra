@@ -12,6 +12,7 @@ import io.kestra.core.runners.*;
 import io.kestra.core.tasks.flows.*;
 import io.kestra.core.utils.TestsUtils;
 import io.kestra.jdbc.JdbcTestUtils;
+import io.kestra.plugin.core.flow.*;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
